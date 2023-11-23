@@ -22,6 +22,14 @@ class OfferCollection implements OfferCollectionInterface
 
     public function getDiscount(float $subTotal): float
     {
-        return 0.00;
+        $totalDiscountAmount = 0.00;
+
+        // Total up discounts
+        foreach($this->offers as $offer) {
+            $discountAmount = $offer->getDiscountAmount($subTotal);
+            $totalDiscountAmount += $discountAmount;
+        }
+
+        return $totalDiscountAmount;
     }
 }
