@@ -7,6 +7,9 @@ use PHPUnit\Framework\TestCase;
 use App\Models\Product;
 use App\Services\Basket;
 use App\Exceptions\DuplicateProductException;
+use App\Models\Offer;
+use App\Services\OfferCollection;
+
 final class BasketTest extends TestCase
 {
     private Product $photography;
@@ -67,6 +70,44 @@ final class BasketTest extends TestCase
         $this->expectException(DuplicateProductException::class);
         $basket->addProduct($this->photography);
         $basket->addProduct($this->photography);
+    }
+
+    public function testOffersCanBeAppliedToBasket(): void
+    {
+        $offerCollection = new OfferCollection();
+        $offerCollection->addOffer(
+            new Offer(
+                '12months', 
+                'Users who have agreed to a 12-month contract are entitled to a 10% discount off the basket total', 
+                10
+            )
+        );
+        $basket = new Basket($offerCollection);
+
+        $basket->addProduct($this->photography);
+        $basket->addProduct($this->floorplan);
+        $basket->addProduct($this->gasCert);
+        $basket->addProduct($this->eicrCert);
+
+        $expectedSubTotal = 200 + 100 + 83.50 + 51.00;
+        $expectedDiscount = $expectedSubTotal * 0.1;
+        $expectedTotal = $expectedSubTotal - $expectedDiscount;
+
+        $this->assertEquals(
+            $expectedSubTotal,
+            $basket->getSubtotal()
+        );
+
+        $this->assertEquals(
+            $expectedDiscount,
+            $basket->getDiscount()
+        );
+
+        $this->assertEquals(
+            $expectedTotal,
+            $basket->getTotal()
+        );
+
     }
 }
 

@@ -6,12 +6,24 @@ namespace App\Services;
 use App\Exceptions\DuplicateProductException;
 use App\Interfaces\BasketInterface;
 use App\Interfaces\ProductInterface;
+use App\Interfaces\OfferCollectionInterface;
 
 class Basket implements BasketInterface
 {
     private array $products = [];
+    private OfferCollection $offerCollection;
     private $total = 0.00;
     private $subTotal = 0.00;
+    private $discount = 0.00;
+
+    public function __construct(?OfferCollectionInterface $offerCollection = null)
+    {
+        if($offerCollection === null) {
+            $this->offerCollection = new OfferCollection();
+        } else {
+            $this->offerCollection = $offerCollection;
+        }
+    }
 
     public function addProduct(ProductInterface $product): void
     {
@@ -39,6 +51,11 @@ class Basket implements BasketInterface
         return $this->total;
     }
 
+    public function getDiscount(): float 
+    {
+        return $this->discount;
+    }
+
     public function calculateTotals(): void
     {   
         $subTotal = 0.00;
@@ -47,7 +64,8 @@ class Basket implements BasketInterface
         }
 
         $this->subTotal = $subTotal;
-        $this->total = $this->subTotal;
+        $this->discount = $this->offerCollection->getDiscount($this->subTotal);
+        $this->total = $this->subTotal - $this->getDiscount();
     }
 }
 
