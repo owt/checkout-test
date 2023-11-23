@@ -10,14 +10,12 @@ class Offer implements OfferInterface
     private string $offerCode;
     private string $name;
     private float $discount;
-    private int $order;
 
-    public function __construct(string $offerCode, string $name, float $discount, int $order = 1)
+    public function __construct(string $offerCode, string $name, float $discount)
     {
         $this->offerCode = $offerCode;
         $this->name = $name;
         $this->discount = $discount;
-        $this->order = $order;
     }
 
     public function getOfferCode(): string { 
@@ -34,9 +32,5 @@ class Offer implements OfferInterface
 
     public function getDiscountAmount(float $price): float {
         return ($price * ($this->discount/100));
-    }
-
-    public function getOrder(): int {
-        return $this->order;
     }
 }

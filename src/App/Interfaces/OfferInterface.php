@@ -10,5 +10,4 @@ interface OfferInterface
     public function getName(): string;
     public function getDiscount(): float;
     public function getDiscountAmount(float $price): float;
-    public function getOrder(): int;
 }
