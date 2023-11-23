@@ -7,8 +7,12 @@ use PHPUnit\Framework\TestCase;
 use App\Models\Product;
 use App\Services\Basket;
 use App\Exceptions\DuplicateProductException;
+use App\Exceptions\ItemNotFoundException;
 use App\Models\Offer;
 use App\Services\OfferCollection;
+use tests\FakeDataSource;
+use App\Services\ProductRepository;
+use App\Services\OfferRepository;
 
 final class BasketTest extends TestCase
 {
@@ -17,8 +21,15 @@ final class BasketTest extends TestCase
     private Product $gasCert;
     private Product $eicrCert;
 
+    private $productRepository;
+    private $offerRepository;
+
     public function setUp(): void
     {
+        $this->productRepository = new ProductRepository(new FakeDataSource);
+        $this->offerRepository = new OfferRepository(new FakeDataSource);
+
+
         $this->photography = new Product('P001', 'Photography', 200);
         $this->floorplan = new Product('P002', 'Floorplan', 100);
         $this->gasCert = new Product('P003', 'Gas Certificate', 83.50);
@@ -29,10 +40,11 @@ final class BasketTest extends TestCase
     {
         $basket = new Basket();
 
-        $basket->addProduct($this->photography);
+        $photography = $this->productRepository->getProduct('P001');
+        $basket->addProduct($photography);
 
         $this->assertEquals(
-            [$this->photography->getProductCode() => $this->photography],
+            [$photography->getProductCode() => $photography],
             $basket->getProducts()
         );
         
@@ -46,13 +58,16 @@ final class BasketTest extends TestCase
     {
         $basket = new Basket();
 
-        $basket->addProduct($this->photography);
-        $basket->addProduct($this->floorplan);
+        $photography = $this->productRepository->getProduct('P001');
+        $floorplan = $this->productRepository->getProduct('P002');
+
+        $basket->addProduct($photography);
+        $basket->addProduct($floorplan);
 
         $this->assertEquals(
             [
-                $this->photography->getProductCode() => $this->photography, 
-                $this->floorplan->getProductCode() => $this->floorplan
+                $photography->getProductCode() => $photography, 
+                $floorplan->getProductCode() => $floorplan
             ],
             $basket->getProducts()
         );
@@ -68,26 +83,29 @@ final class BasketTest extends TestCase
         $basket = new Basket();
 
         $this->expectException(DuplicateProductException::class);
-        $basket->addProduct($this->photography);
-        $basket->addProduct($this->photography);
+        $basket->addProduct($this->productRepository->getProduct('P001'));
+        $basket->addProduct($this->productRepository->getProduct('P001'));
+    }
+
+    public function testProductDoesNotExist(): void
+    {
+        $basket = new Basket();
+
+        $this->expectException(ItemNotFoundException::class);
+        $basket->addProduct($this->productRepository->getProduct('P005'));
     }
 
     public function testOffersCanBeAppliedToBasket(): void
     {
         $offerCollection = new OfferCollection();
-        $offerCollection->addOffer(
-            new Offer(
-                '12months', 
-                'Users who have agreed to a 12-month contract are entitled to a 10% discount off the basket total', 
-                10
-            )
-        );
+
+        $offerCollection->addOffer($this->offerRepository->getOffer('12MONTHS'));
         $basket = new Basket($offerCollection);
 
-        $basket->addProduct($this->photography);
-        $basket->addProduct($this->floorplan);
-        $basket->addProduct($this->gasCert);
-        $basket->addProduct($this->eicrCert);
+        $basket->addProduct($this->productRepository->getProduct('P001'));
+        $basket->addProduct($this->productRepository->getProduct('P002'));
+        $basket->addProduct($this->productRepository->getProduct('P003'));
+        $basket->addProduct($this->productRepository->getProduct('P004'));
 
         $expectedSubTotal = 200 + 100 + 83.50 + 51.00;
         $expectedDiscount = $expectedSubTotal * 0.1;
