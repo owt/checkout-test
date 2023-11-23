@@ -20,7 +20,7 @@ class OfferCollection implements OfferCollectionInterface
         return $this->offers;
     }
 
-    public function calculateDiscount(float $subTotal): float
+    public function getDiscount(float $subTotal): float
     {
         return 0.00;
     }

@@ -7,5 +7,5 @@ interface OfferCollectionInterface
 {
     public function addOffer(OfferInterface $offer): void;
     public function getOffers(): array;
-    public function calculateDiscount(float $subTotal): float;
+    public function getDiscount(float $subTotal): float;
 }
