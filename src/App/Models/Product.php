@@ -7,16 +7,11 @@ use App\Interfaces\ProductInterface;
 
 class Product implements ProductInterface
 {
-    private string $productCode;
-    private string $name;
-    private float $price;
-
-    public function __construct(string $productCode, string $name, float $price)
-    {
-        $this->productCode = $productCode;
-        $this->name = $name;
-        $this->price = $price;
-    }
+    public function __construct(
+        protected string $productCode,
+        protected string $name,
+        protected float $price
+    ) {}
 
     public function getProductCode(): string { 
         return $this->productCode;

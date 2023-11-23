@@ -11,15 +11,13 @@ use App\Interfaces\OfferCollectionInterface;
 class Basket implements BasketInterface
 {
     private array $products = [];
-    private ?OfferCollection $offerCollection;
     private $total = 0.00;
     private $subTotal = 0.00;
     private $discount = 0.00;
 
-    public function __construct(?OfferCollectionInterface $offerCollection = null)
-    {
-        $this->offerCollection = $offerCollection;
-    }
+    public function __construct(
+        private ?OfferCollectionInterface $offerCollection = null
+    ) {}
 
     public function addProduct(ProductInterface $product): void
     {

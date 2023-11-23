@@ -7,16 +7,11 @@ use App\Interfaces\OfferInterface;
 
 class Offer implements OfferInterface
 {
-    private string $offerCode;
-    private string $name;
-    private float $discount;
-
-    public function __construct(string $offerCode, string $name, float $discount)
-    {
-        $this->offerCode = $offerCode;
-        $this->name = $name;
-        $this->discount = $discount;
-    }
+    public function __construct(
+        protected string $offerCode,
+        protected string $name,
+        protected float $discount
+    ) {}
 
     public function getOfferCode(): string { 
         return $this->offerCode;
