@@ -68,4 +68,3 @@ class Basket implements BasketInterface
         $this->total = $this->subTotal - $this->getDiscount();
     }
 }
-
