@@ -1,4 +1,4 @@
-# Howsy Checkout
+# Checkout test
 
 ## Running the tests
 
