@@ -6,6 +6,7 @@ namespace tests;
 use PHPUnit\Framework\TestCase;
 use App\Models\Product;
 use App\Services\Basket;
+use App\Exceptions\DuplicateProductException;
 final class BasketTest extends TestCase
 {
     private Product $photography;
@@ -58,4 +59,14 @@ final class BasketTest extends TestCase
             $basket->getTotal()
         );
     }
+
+    public function testCanAddTheSameProductManyTimes(): void
+    {
+        $basket = new Basket();
+
+        $this->expectException(DuplicateProductException::class);
+        $basket->addProduct($this->photography);
+        $basket->addProduct($this->photography);
+    }
 }
+

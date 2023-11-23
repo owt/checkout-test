@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Exceptions\DuplicateProductException;
 use App\Interfaces\BasketInterface;
 use App\Interfaces\ProductInterface;
 
@@ -14,6 +15,10 @@ class Basket implements BasketInterface
 
     public function addProduct(ProductInterface $product): void
     {
+        if (array_key_exists($product->getProductCode(), $this->products) ) {
+            throw new DuplicateProductException($product->getProductCode());
+        }
+
         $this->products[$product->getProductCode()] = $product;
         $this->calculateTotals();
     }
