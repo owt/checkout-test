@@ -23,7 +23,7 @@ class Basket implements BasketInterface
 
     public function addProduct(ProductInterface $product): void
     {
-        if (array_key_exists($product->getProductCode(), $this->products) ) {
+        if (array_key_exists($product->getProductCode(), $this->products)) {
             throw new DuplicateProductException($product->getProductCode());
         }
 
