@@ -38,7 +38,7 @@ class Basket implements BasketInterface
     {   
         $subTotal = 0.00;
         foreach($this->products as $product) {
-            $this->subTotal += $product->getPrice();
+            $subTotal += $product->getPrice();
         }
 
         $this->subTotal = $subTotal;
